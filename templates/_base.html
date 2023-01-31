@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>{% block title %} {% endblock title %}</title>
+        {% load static %}
+        {% load bootstrap4 %}
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+        <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery='full' %}
+    </head>
+    <body>
+        {% block menu %}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
+            <div class="container">
+                <a class="navbar-brand" href="/">Chat</a>
+                {% if request.user.is_authenticated %}
+                    <span class="navbar-text mx-2">You are logged in as:</span>
+                    <a class="navbar-text{% if request.resolver_match.view_name == 'profile' %} active{% endif %}" aria-current="page" href="{% url 'profile' %}">
+                        <i class="fa-solid fa-user"></i>
+                        {{ request.user.username }}
+                    </a>
+                    <span class="navbar-text mx-2">|</span>
+                    <a class="navbar-text{% if request.resolver_match.view_name == 'account_logout' %} active{% endif %}" aria-current="page" href="{% url 'account_logout' %}">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Logout
+                    </a>
+                {% else %}
+                    <a class="navbar-text{% if request.resolver_match.view_name == 'account_login' %} active{% endif %}" aria-current="page" href="{% url 'account_login' %}">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Login
+                    </a>
+                    <span class="navbar-text mx-2">|</span>
+                    <a class="navbar-text{% if request.resolver_match.view_name == 'account_signup' %} active{% endif %}" aria-current="page" href="{% url 'account_signup' %}">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Sign Up
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endblock menu %}
+        <main role="main" class="container">
+            {% bootstrap_messages %}
+            {% block content %}
+            {% endblock content %}
+        </main>
+    </body>
+</html>

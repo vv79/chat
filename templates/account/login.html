@@ -1,0 +1,19 @@
+{% extends '_base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}Authentication{% endblock title %}
+
+{% block content %}
+<h2>Authentication</h2>
+<hr />
+
+<form method="post" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">Sign In</button>
+        <a href="{% url 'account_signup' %}" class="btn btn-secondary">Sign Up</a>
+    {% endbuttons %}
+</form>
+{% endblock %}
