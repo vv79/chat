@@ -47,11 +47,13 @@ INSTALLED_APPS = [
     'django_filters',
     'bootstrap4',
     'fontawesomefree',
+    'rest_framework',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'user',
-    'chat'
+    'chat',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -131,7 +133,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -210,4 +214,13 @@ BOOTSTRAP4 = {
         'default': 'bootstrap4.renderers.FieldRenderer',
         'inline': 'bootstrap4.renderers.InlineFieldRenderer',
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
 }

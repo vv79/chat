@@ -15,12 +15,24 @@
         <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
         {% bootstrap_css %}
         {% bootstrap_javascript jquery='full' %}
+        {% block stylesheets %}{% endblock %}
     </head>
     <body>
         {% block menu %}
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-3">
             <div class="container">
                 <a class="navbar-brand" href="/">Chat</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link{% if '/swagger-ui/' in  request.path %} active{% endif %}" aria-current="page" href="/swagger-ui/">API</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if request.resolver_match.view_name == 'profile' %} active{% endif %}" aria-current="page" href="/">Rooms</a>
+                        </li>
+                    </ul>
+                </div>
                 {% if request.user.is_authenticated %}
                     <span class="navbar-text mx-2">You are logged in as:</span>
                     <a class="navbar-text{% if request.resolver_match.view_name == 'profile' %} active{% endif %}" aria-current="page" href="{% url 'profile' %}">

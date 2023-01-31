@@ -1,0 +1,660 @@
+openapi: 3.0.2
+info:
+  title: 'Chat API'
+  version: '1.0'
+paths:
+  /api/rooms/:
+    get:
+      operationId: listRooms
+      description: ''
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: title
+        required: false
+        in: query
+        description: title
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=400&limit=100
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=200&limit=100
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Room'
+          description: ''
+      tags:
+      - Rooms
+    post:
+      operationId: createRoom
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+      tags:
+      - Rooms
+  /api/rooms/{id}/:
+    get:
+      operationId: retrieveRoom
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this room.
+        schema:
+          type: string
+      - name: title
+        required: false
+        in: query
+        description: title
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+      tags:
+      - Rooms
+    put:
+      operationId: updateRoom
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this room.
+        schema:
+          type: string
+      - name: title
+        required: false
+        in: query
+        description: title
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+      tags:
+      - Rooms
+    patch:
+      operationId: partialUpdateRoom
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this room.
+        schema:
+          type: string
+      - name: title
+        required: false
+        in: query
+        description: title
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Room'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Room'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Room'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+          description: ''
+      tags:
+      - Rooms
+    delete:
+      operationId: destroyRoom
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this room.
+        schema:
+          type: string
+      - name: title
+        required: false
+        in: query
+        description: title
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - Rooms
+  /api/messages/:
+    get:
+      operationId: listMessages
+      description: ''
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - name: sender
+        required: false
+        in: query
+        description: sender
+        schema:
+          type: string
+      - name: receiver
+        required: false
+        in: query
+        description: receiver
+        schema:
+          type: string
+      - name: room
+        required: false
+        in: query
+        description: room
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=400&limit=100
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=200&limit=100
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+          description: ''
+      tags:
+      - Messages
+    post:
+      operationId: createMessage
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Message'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+      tags:
+      - Messages
+  /api/messages/{id}/:
+    get:
+      operationId: retrieveMessage
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this message.
+        schema:
+          type: string
+      - name: sender
+        required: false
+        in: query
+        description: sender
+        schema:
+          type: string
+      - name: receiver
+        required: false
+        in: query
+        description: receiver
+        schema:
+          type: string
+      - name: room
+        required: false
+        in: query
+        description: room
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+      tags:
+      - Messages
+    put:
+      operationId: updateMessage
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this message.
+        schema:
+          type: string
+      - name: sender
+        required: false
+        in: query
+        description: sender
+        schema:
+          type: string
+      - name: receiver
+        required: false
+        in: query
+        description: receiver
+        schema:
+          type: string
+      - name: room
+        required: false
+        in: query
+        description: room
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Message'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+      tags:
+      - Messages
+    patch:
+      operationId: partialUpdateMessage
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this message.
+        schema:
+          type: string
+      - name: sender
+        required: false
+        in: query
+        description: sender
+        schema:
+          type: string
+      - name: receiver
+        required: false
+        in: query
+        description: receiver
+        schema:
+          type: string
+      - name: room
+        required: false
+        in: query
+        description: room
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Message'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+          description: ''
+      tags:
+      - Messages
+    delete:
+      operationId: destroyMessage
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this message.
+        schema:
+          type: string
+      - name: sender
+        required: false
+        in: query
+        description: sender
+        schema:
+          type: string
+      - name: receiver
+        required: false
+        in: query
+        description: receiver
+        schema:
+          type: string
+      - name: room
+        required: false
+        in: query
+        description: room
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - Messages
+  /api/users/:
+    get:
+      operationId: listUsers
+      description: ''
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=400&limit=100
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://api.example.org/accounts/?offset=200&limit=100
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - Users
+    post:
+      operationId: createUser
+      description: ''
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - Users
+  /api/users/{id}/:
+    get:
+      operationId: retrieveUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - Users
+    put:
+      operationId: updateUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - Users
+    patch:
+      operationId: partialUpdateUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+      tags:
+      - Users
+    delete:
+      operationId: destroyUser
+      description: ''
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: A unique integer value identifying this user.
+        schema:
+          type: string
+      responses:
+        '204':
+          description: ''
+      tags:
+      - Users
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+      required:
+      - title
+    Message:
+      type: object
+      properties:
+        sender:
+          type: string
+        receiver:
+          type: string
+        room:
+          type: string
+        message:
+          type: string
+          maxLength: 1200
+        timestamp:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - sender
+      - receiver
+      - room
+      - message
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+\z
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - username
+      - password
