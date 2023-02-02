@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+
+{% load tz %}
+
+{% block title %}User list{% endblock title %}
+
+{% block content %}
+    <h2>User list</h2>
+    <hr>
+    {% if user_list %}
+    <table class="table">
+        <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th width="200">Date joined</th>
+        </tr>
+        {% for user in user_list %}
+        <tr>
+            <td><a href="{% url 'user_detail' pk=user.id %}">{{ user.username }}</a></td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.date_joined|date:"d M Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <h3>No rooms yet.</h3>
+    {% endif %}
+    {% include "_pagination.html" %}
+{% endblock content %}

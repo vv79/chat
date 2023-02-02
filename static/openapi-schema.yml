@@ -218,19 +218,19 @@ paths:
         in: query
         description: sender
         schema:
-          type: string
+          type: integer
       - name: receiver
         required: false
         in: query
         description: receiver
         schema:
-          type: string
+          type: integer
       - name: room
         required: false
         in: query
         description: room
         schema:
-          type: string
+          type: integer
       responses:
         '200':
           content:
@@ -634,7 +634,7 @@ components:
         message:
           type: string
           maxLength: 1200
-        timestamp:
+        date_created:
           type: string
           format: date-time
           readOnly: true

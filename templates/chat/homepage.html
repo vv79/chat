@@ -3,5 +3,58 @@
 {% block title %}Homepage{% endblock title %}
 
 {% block content %}
-<h1>{{ page_title }}</h1>
+    <h2>What chat room would you like to enter?</h2>
+    <hr />
+
+    <div class="input-group">
+        {% csrf_token %}
+        <input id="room-title-input" name="title" class="form-control" type="text" size="100">
+        <div class="input-group-append">
+            <button id="room-title-submit" class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('#room-title-input').focus();
+        document.querySelector('#room-title-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#room-title-submit').click();
+            }
+        };
+
+        document.querySelector('#room-title-submit').onclick = function(e) {
+            var roomTitle = document.querySelector('#room-title-input').value;
+            var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch('/api/rooms?title='+roomTitle)
+                .then((response) => { return response.json(); })
+                .then((data) => {
+                    if(data.count) {
+                        window.location.pathname = '/rooms/' + roomTitle + '/'
+                    }
+                })
+                .then(() => {
+                    console.log('creating new room')
+                    fetch('/api/rooms/', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            title: roomTitle,
+                        }),
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                            "Content-type": "application/json; charset=UTF-8"
+                        },
+                        mode: 'same-origin'
+                    })
+                    .then((response) => { return response.json(); })
+                    .then((data) => {
+                        window.location.pathname = '/rooms/' + data.title + '/'
+                    })
+                    .catch(() => { console.log('error') });
+                })
+                .catch(() => { console.log('error') });
+
+        };
+    </script>
+
 {% endblock content %}

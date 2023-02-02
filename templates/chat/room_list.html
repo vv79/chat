@@ -1,0 +1,27 @@
+{% extends '_base.html' %}
+
+{% load tz %}
+
+{% block title %}Room list{% endblock title %}
+
+{% block content %}
+    <h2>Room list</h2>
+    <hr>
+    {% if room_list %}
+    <table class="table">
+        <tr>
+            <th width="*">Title</th>
+            <th width="150">Date</th>
+        </tr>
+        {% for room in room_list %}
+        <tr>
+            <td><a href="{% url 'room_detail' slug=room.slug %}">{{ room.title }}</a></td>
+            <td>{{ room.date_created|date:"d M Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <h3>No rooms yet.</h3>
+    {% endif %}
+    {% include "_pagination.html" %}
+{% endblock content %}

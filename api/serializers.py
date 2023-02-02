@@ -4,11 +4,9 @@ from chat.models import Room, Message
 
 
 class RoomSerializer(serializers.ModelSerializer):
-    users = serializers.SlugRelatedField(many=True, slug_field='username', queryset=User.objects.all())
-
     class Meta:
         model = Room
-        fields = ['title', 'users']
+        fields = ['id', 'title', 'date_created', 'slug', 'users']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'password']
+        fields = ['id', 'username', 'password']
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -26,4 +24,4 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = ['sender', 'receiver', 'room', 'message', 'timestamp']
+        fields = ['id', 'sender', 'receiver', 'room', 'message', 'date_created']
