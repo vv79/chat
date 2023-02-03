@@ -4,7 +4,7 @@
 pip install -r requirements.txt
 ```
 
-### Так же в .env надо прописать следующие переменные
+### Переименуйте файл .env.sample в .env и скопируйте в него следующее:
 
 ```bash
 DEBUG=True
