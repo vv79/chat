@@ -30,7 +30,8 @@
                 .then((response) => { return response.json(); })
                 .then((data) => {
                     if(data.count) {
-                        window.location.pathname = '/rooms/' + roomTitle + '/'
+                        room = data.results[0];
+                        window.location.pathname = '/rooms/' + room.slug + '/'
                     }
                 })
                 .then(() => {
@@ -48,7 +49,7 @@
                     })
                     .then((response) => { return response.json(); })
                     .then((data) => {
-                        window.location.pathname = '/rooms/' + data.title + '/'
+                        window.location.pathname = '/rooms/' + data.slug + '/'
                     })
                     .catch(() => { console.log('error') });
                 })

@@ -9,121 +9,126 @@
     <hr />
     <div class="row">
         <div class="col-12">
-            <ul class="nav nav-tabs" role="tablist">
-                {% for room_user in room_users %}
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'room_detail_user' slug=room.slug username=room_user.user.username %}">{{ room_user.user.username }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-            <div class="tab-content">
-                <div class="tab-pane fade show active" role="tabpanel">
-                {% if receiver %}
-                    <textarea id="chat-log" readonly disabled class="form-control" cols="100" rows="20"></textarea><br>
+            {% if room_users|length %}
+                <ul class="nav nav-tabs" role="tablist">
+                    {% for room_user in room_users %}
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'room_detail_user' slug=room.slug username=room_user.user.username %}">{{ room_user.user.username }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" role="tabpanel">
+                    {% if receiver %}
+                        <textarea id="chat-log" readonly disabled class="form-control" cols="100" rows="20"></textarea><br>
 
-                    <div class="input-group">
-                        {% csrf_token %}
-                        <input id="chat-message-input" disabled class="form-control" type="text" size="100">
-                        <div class="input-group-append">
-                            <button id="chat-message-submit" disabled class="btn btn-primary" type="submit">Send</button>
+                        <div class="input-group">
+                            {% csrf_token %}
+                            <input id="chat-message-input" disabled class="form-control" type="text" size="100">
+                            <div class="input-group-append">
+                                <button id="chat-message-submit" disabled class="btn btn-primary" type="submit">Send</button>
+                            </div>
                         </div>
+                    {% else %}
+                        <h5 class="py-5 text-center text-danger">Please select user to chat with.</h5>
+                    {% endif %}
                     </div>
-                {% else %}
-                    <h5 class="py-5 text-center text-danger">Please select user to chat with.</h5>
-                {% endif %}
                 </div>
-            </div>
+            {% else %}
+                <h5 class="py-5 text-center text-danger">There is no one in the room but you.</h5>
+            {% endif %}
         </div>
     </div>
 
     {% if receiver %}
-    {{ room.id|json_script:"room_id" }}
-    {{ room.slug|json_script:"room_name" }}
-    {{ sender.id|json_script:"sender_id" }}
-    {{ sender.username|json_script:"sender_username" }}
-    {{ receiver.id|json_script:"receiver_id" }}
-    {{ receiver.username|json_script:"receiver_username" }}
-    <script>
-        const roomName = JSON.parse(document.getElementById('room_name').textContent);
-        const roomId = JSON.parse(document.getElementById('room_id').textContent);
-        const senderId = JSON.parse(document.getElementById('sender_id').textContent);
-        const senderUsername = JSON.parse(document.getElementById('sender_username').textContent);
-        const receiverId = JSON.parse(document.getElementById('receiver_id').textContent);
-        const receiverUsername = JSON.parse(document.getElementById('receiver_username').textContent);
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        {{ room.id|json_script:"room_id" }}
+        {{ room.title|json_script:"room_name" }}
+        {{ room.slug|json_script:"room_slug" }}
+        {{ sender.id|json_script:"sender_id" }}
+        {{ sender.username|json_script:"sender_username" }}
+        {{ receiver.id|json_script:"receiver_id" }}
+        {{ receiver.username|json_script:"receiver_username" }}
+        <script>
+            const roomName = JSON.parse(document.getElementById('room_name').textContent);
+            const roomSlug = JSON.parse(document.getElementById('room_slug').textContent);
+            const roomId = JSON.parse(document.getElementById('room_id').textContent);
+            const senderId = JSON.parse(document.getElementById('sender_id').textContent);
+            const senderUsername = JSON.parse(document.getElementById('sender_username').textContent);
+            const receiverId = JSON.parse(document.getElementById('receiver_id').textContent);
+            const receiverUsername = JSON.parse(document.getElementById('receiver_username').textContent);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        const chatSocket = new WebSocket(
-            'ws://'+ window.location.host + '/ws/rooms/' + roomName + '/'
-        );
+            const chatSocket = new WebSocket(
+                'ws://'+ window.location.host + '/ws/rooms/' + roomSlug + '/'
+            );
 
-        chatSocket.onopen = function(e) {
-            document.querySelector('#chat-log').value = '';
-            fetch('/api/messages/?limit=50&sender='+senderId+'&receiver='+receiverId+'&room='+roomId)
+            chatSocket.onopen = function(e) {
+                document.querySelector('#chat-log').value = '';
+                fetch('/api/messages/?limit=50&sender='+senderId+'&receiver='+receiverId+'&room='+roomId)
+                    .then((response) => { return response.json(); })
+                    .then((data) => {
+                        data.results.forEach((data) => {
+                            document.querySelector('#chat-log').value += (data.sender +': ' + data.message + ' ['+ data.date_created+ ']\n');
+                        })
+                    })
+                    .catch(() => { console.log('Old messages render error') });
+
+                document.querySelector('#chat-log').disabled = false;
+                document.querySelector('#chat-message-input').disabled = false;
+                document.querySelector('#chat-message-submit').disabled = false;
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+                document.querySelector('#chat-log').disabled = true;
+                document.querySelector('#chat-message-input').disabled = true;
+                document.querySelector('#chat-message-submit').disabled = true;
+            };
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                document.querySelector('#chat-log').value += (data.sender +': ' + data.message + ' ['+ data.date_created+ ']\n');
+            };
+
+
+            document.querySelector('#chat-message-input').focus();
+            document.querySelector('#chat-message-input').onkeyup = function(e) {
+                if (e.keyCode === 13) {  // enter, return
+                    document.querySelector('#chat-message-submit').click();
+                }
+            };
+
+            document.querySelector('#chat-message-submit').onclick = function(e) {
+                const messageInputDom = document.querySelector('#chat-message-input');
+                const message = messageInputDom.value;
+                fetch('/api/messages/', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'sender': senderUsername,
+                        'receiver': receiverUsername,
+                        'message': message,
+                        'room': roomName
+                    }),
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        "Content-type": "application/json; charset=UTF-8"
+                    },
+                    mode: 'same-origin'
+                })
                 .then((response) => { return response.json(); })
                 .then((data) => {
-                    data.results.forEach((data) => {
-                        document.querySelector('#chat-log').value += (data.sender +': ' + data.message + ' ['+ data.date_created+ ']\n');
-                    })
+                    chatSocket.send(JSON.stringify({
+                        'sender': data.sender,
+                        'receiver': data.receiver,
+                        'message': data.message,
+                        'room': data.room,
+                        'date_created': data.date_created
+                    }));
                 })
-                .catch(() => { console.log('Old messages render error') });
+                .catch(() => { console.log('error') });
 
-
-            document.querySelector('#chat-log').disabled = false;
-            document.querySelector('#chat-message-input').disabled = false;
-            document.querySelector('#chat-message-submit').disabled = false;
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-            document.querySelector('#chat-log').disabled = true;
-            document.querySelector('#chat-message-input').disabled = true;
-            document.querySelector('#chat-message-submit').disabled = true;
-        };
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.sender +': ' + data.message + ' ['+ data.date_created+ ']\n');
-        };
-
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            fetch('/api/messages/', {
-                method: 'POST',
-                body: JSON.stringify({
-                    'sender': senderUsername,
-                    'receiver': receiverUsername,
-                    'message': message,
-                    'room': roomName
-                }),
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    "Content-type": "application/json; charset=UTF-8"
-                },
-                mode: 'same-origin'
-            })
-            .then((response) => { return response.json(); })
-            .then((data) => {
-                chatSocket.send(JSON.stringify({
-                    'sender': data.sender,
-                    'receiver': data.receiver,
-                    'message': data.message,
-                    'room': data.room,
-                    'date_created': data.date_created
-                }));
-            })
-            .catch(() => { console.log('error') });
-
-            messageInputDom.value = '';
-        };
-    </script>
+                messageInputDom.value = '';
+            };
+        </script>
     {% endif %}
 {% endblock content %}
